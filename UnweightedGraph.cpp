@@ -64,20 +64,9 @@ bool UnweightedGraph::IsEulerian() const {
     }// Of for
     place++;
   }// Of for
-  cout << "outdegs: ";
-  for (auto elem : outDegs)
-    cout << " " << elem;
-  cout << endl;
-  cout << "indegs: ";
-  for (auto elem : inDegs)
-    cout << " " << elem;
-  cout << endl;
 
-  cout << "TEST" << endl;
   for (int i = 0; i != outDegs.size(); i++)
   {
-    cout << outDegs[i] << ' ' << inDegs[i];
-    cout << endl;
     if (outDegs[i] != inDegs[i])
       return false;
   }// Of for 
