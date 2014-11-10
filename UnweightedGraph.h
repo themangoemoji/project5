@@ -9,6 +9,10 @@
 #include <list>
 #include <vector>
 #include <map>
+#include <iostream>
+
+using std::endl;
+using std::cout;
 
 class UnweightedGraph
 {
@@ -25,8 +29,8 @@ class UnweightedGraph
 
   private:
     std::vector<std::list<int> > adjList;
+    std::list<int> *adj = new std::list<int>[adjList.size()];
     //Add any attribute or method that can help complete your implementation
-
 
 };
 #endif
