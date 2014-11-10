@@ -8,21 +8,25 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <map>
 
 class UnweightedGraph
 {
-	public:
-	UnweightedGraph(const std::string& t);
-	
-	void DisplayInfo() const;
-	bool IsConnected() const;
-	bool IsEulerian() const;
-	
-	std::list<int> FindEulerianCycle() const;
-	bool VerifyEulerCycle(const std::list<int>& cycle) const;
-	
-	private:
-	std::vector<std::list<int>> adj_list;
-	//Add any attribute or method that can help complete your implementation
+  public:
+    UnweightedGraph(const std::string& t);
+
+    void DisplayInfo() const;
+    bool IsConnected() const;
+    bool IsEulerian() const;
+
+
+    std::list<int> FindEulerianCycle() const;
+    bool VerifyEulerCycle(const std::list<int>& cycle) const;
+
+  private:
+    std::vector<std::list<int> > adjList;
+    //Add any attribute or method that can help complete your implementation
+
+
 };
 #endif
