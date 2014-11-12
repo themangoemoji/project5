@@ -79,10 +79,12 @@ bool UnweightedGraph::IsConnected() const {
   {
     if (visited[i] == false) 
     {
+      delete(visited);
       return false;
     }
   }
   // If successful escape
+  delete(visited);
   return true;
 }
 
@@ -97,22 +99,53 @@ bool UnweightedGraph::IsEulerian() const {
     for (auto list = iter->begin(); list != iter->end(); ++list)
     {
       outDegs[place]++;
-      inDegs[*list]++;
+      outDegs[*list]++;
     }// Of for
     place++;
   }// Of for
 
   for (int i = 0; i != outDegs.size(); i++)
   {
-    if (outDegs[i] != inDegs[i])
+    if (outDegs[i] % 2 != 0)
       return false;
   }// Of for 
   return true;
 }
 
 list<int> UnweightedGraph::FindEulerianCycle() const {
-  list<int> current_cycle;
-  // TODO
+  // Creating the lists that will keep track of the cycles
+  // Splice_into will eventually hold the finished cycle
+  std::vector<std::list<bool> > boolList;
+  list<int> current_cycle;  
+  list<int> splice_into;  
+
+  // Starting the cycle with the first element of the first list
+  int u = adjList[0].front();
+  current_cycle.push_back(u);
+
+  // Bool to keep track of the position (index) in our parallel
+  // bool vector
+  int out_bool_count = 0;
+  // Using two parallel vectors:
+  //    1) adjList
+  //    2) boolList, places bool values for our adjacencies
+  for (auto iter = adjList[u].begin(); iter != adjList[u].end(); iter++)
+  {
+    // Ass soon as we reach a value to traverse from, we set it equal to true
+    std::advance(iter, out_bool_count);
+    if (*iter == 0)
+    {
+      // Set our new vector to the iterator
+      // We will set the path to true, and continue the traverse
+      // TODO fix the index for list (cant use int index b/c that would be nice)
+      *iter++;
+      auto bool_iter = boolList[*iter].begin();
+      std::advance(bool_iter, u)
+      u = *iter;  
+    }
+    // Incriment the count to keep track of bools
+    out_bool_count++;
+  }
   return current_cycle;
 }
 
