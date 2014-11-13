@@ -117,23 +117,64 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
 	// Splice_into will eventually hold the finished cycle
 	std::vector<std::list<bool> > boolList;
 	list<int> subcycle;  
-	list<int> cycle;  
+	list<int> current_cycle;  
 	std::vector< std::pair<int, int> > paths;
-	int firstnum = 0, secondnum = 0;
-	path = std::make_pair<int,int> (firstnum, secondnum);
+  // numbers to hold path start and end
+	int start = 0, end= 0;
+  // The index of the overlying adjList (node)
+  int node = 0;
+  // The current and next indecies for nodes
+  int curr, next;
+  std::pair <int, int> path;
+	path = std::make_pair (start, end);
+  
 	
 	// Load values into paths
 	for (auto iter = adjList.begin(); iter != adjList.end(); iter++)
 	{
-		for (auto listIt = iter.begin(); listIt = iter.end(); listIt++)
+		for (auto listIt = iter->begin(); listIt != iter->end(); listIt++)
 		{
 			// Make paths and insert them into vector of paths
-			path.first = *iter;				
+			path.first = node;
 			path.second = *listIt;				
-			vector.pushback(path)	
+      paths.push_back(path);	
 				// Reverse path and insert
 		}
+    node++;
 	}
+  
+  // Reset the node value, start next iteration.
+  // This time we are constructing cycles, and splicing into current cycle
+  node = 0;
+	// The cycle traverse
+	for (auto iter = adjList.begin(); iter != adjList.end(); iter++)
+	{
+		for (auto listIt = iter->begin(); listIt != iter->end(); listIt++)
+		{
+      start = node;
+      end = *listIt;
+      subcycle.push_back(node);
+      for (auto elem : paths)
+      {
+        // If we have a valid, unused path
+        if (elem.first == start && elem.second == end)
+        {
+          // Delete the forward and reverse paths
+          path = std::make_pair(elem.second, elem.first);
+          paths.push_back(path);
+          path = std::make_pair(elem.first, elem.second);
+          paths.push_back(path);
+          subcycle.push_back(end);
+          advance(iter, end-1);
+          for (auto elem : subcycle)
+            cout << elem << " ";
+          cout << endl;
+          break;
+        }// Of if
+      }// Of for Elements in paths
+		}// Of for Elements in lists
+    node++;
+	}// Of for Lists
 
 	for (auto elem : paths)
 	{
