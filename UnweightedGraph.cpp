@@ -49,7 +49,7 @@ bool UnweightedGraph::IsConnected() const {
   int startNode = 0;
   bool *visited = new bool[adjList.size()];
 
-  for(int i = 0; i < adjList.size(); i++)
+  for(auto i = 0; i != adjList.size(); i++)
     visited[i] = false;
 
   // Queue for list
@@ -79,10 +79,12 @@ bool UnweightedGraph::IsConnected() const {
   {
     if (visited[i] == false) 
     {
+      delete(visited);
       return false;
     }
   }
   // If successful escape
+  delete(visited);
   return true;
 }
 
@@ -97,26 +99,95 @@ bool UnweightedGraph::IsEulerian() const {
     for (auto list = iter->begin(); list != iter->end(); ++list)
     {
       outDegs[place]++;
-      inDegs[*list]++;
+      outDegs[*list]++;
     }// Of for
     place++;
   }// Of for
 
   for (int i = 0; i != outDegs.size(); i++)
   {
-    if (outDegs[i] != inDegs[i])
+    if (outDegs[i] % 2 != 0)
       return false;
   }// Of for 
   return true;
 }
 
 list<int> UnweightedGraph::FindEulerianCycle() const {
-  list<int> current_cycle;
-  // TODO
-  return current_cycle;
+	// Creating the lists that will keep track of the cycles
+	// Splice_into will eventually hold the finished cycle
+	std::vector<std::list<bool> > boolList;
+	list<int> subcycle;  
+	list<int> current_cycle;  
+	std::vector< std::pair<int, int> > paths;
+  // numbers to hold path start and end
+	int start = 0, end= 0;
+  // The index of the overlying adjList (node)
+  int node = 0;
+  // The current and next indecies for nodes
+  int curr, next;
+  std::pair <int, int> path;
+	path = std::make_pair (start, end);
+  
+	
+	// Load values into paths
+	for (auto iter = adjList.begin(); iter != adjList.end(); iter++)
+	{
+		for (auto listIt = iter->begin(); listIt != iter->end(); listIt++)
+		{
+			// Make paths and insert them into vector of paths
+			path.first = node;
+			path.second = *listIt;				
+      paths.push_back(path);	
+				// Reverse path and insert
+		}
+    node++;
+	}
+  
+  // Reset the node value, start next iteration.
+  // This time we are constructing cycles, and splicing into current cycle
+  node = 0;
+	// The cycle traverse
+	for (auto iter = adjList.begin(); iter != adjList.end(); iter++)
+	{
+		for (auto listIt = iter->begin(); listIt != iter->end(); listIt++)
+		{
+      start = node;
+      end = *listIt;
+      subcycle.push_back(node);
+      for (auto elem : paths)
+      {
+        // If we have a valid, unused path
+        if (elem.first == start && elem.second == end)
+        {
+          // Delete the forward and reverse paths
+          path = std::make_pair(elem.second, elem.first);
+          paths.push_back(path);
+          path = std::make_pair(elem.first, elem.second);
+          paths.push_back(path);
+          subcycle.push_back(end);
+          advance(iter, end-1);
+          for (auto elem : subcycle)
+            cout << elem << " ";
+          cout << endl;
+          break;
+        }// Of if
+      }// Of for Elements in paths
+		}// Of for Elements in lists
+    node++;
+	}// Of for Lists
+
+	for (auto elem : paths)
+	{
+		cout << elem.first << ", " << elem.second << endl;
+	}
+	cout << endl;
+
+	// Starting the cycle with the first element of the first list
+
+	return current_cycle;
 }
 
 bool UnweightedGraph::VerifyEulerCycle(const list<int>& cycle) const {
-  //TODO
-  return false;
+	//TODO
+	return false;
 }
