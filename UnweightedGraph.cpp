@@ -49,7 +49,7 @@ bool UnweightedGraph::IsConnected() const {
   int startNode = 0;
   bool *visited = new bool[adjList.size()];
 
-  for(int i = 0; i < adjList.size(); i++)
+  for(auto i = 0; i != adjList.size(); i++)
     visited[i] = false;
 
   // Queue for list
@@ -113,43 +113,40 @@ bool UnweightedGraph::IsEulerian() const {
 }
 
 list<int> UnweightedGraph::FindEulerianCycle() const {
-  // Creating the lists that will keep track of the cycles
-  // Splice_into will eventually hold the finished cycle
-  std::vector<std::list<bool> > boolList;
-  list<int> current_cycle;  
-  list<int> splice_into;  
+	// Creating the lists that will keep track of the cycles
+	// Splice_into will eventually hold the finished cycle
+	std::vector<std::list<bool> > boolList;
+	list<int> subcycle;  
+	list<int> cycle;  
+	std::vector< std::pair<int, int> > paths;
+	int firstnum = 0, secondnum = 0;
+	path = std::make_pair<int,int> (firstnum, secondnum);
+	
+	// Load values into paths
+	for (auto iter = adjList.begin(); iter != adjList.end(); iter++)
+	{
+		for (auto listIt = iter.begin(); listIt = iter.end(); listIt++)
+		{
+			// Make paths and insert them into vector of paths
+			path.first = *iter;				
+			path.second = *listIt;				
+			vector.pushback(path)	
+				// Reverse path and insert
+		}
+	}
 
-  // Starting the cycle with the first element of the first list
-  int u = adjList[0].front();
-  current_cycle.push_back(u);
+	for (auto elem : paths)
+	{
+		cout << elem.first << ", " << elem.second << endl;
+	}
+	cout << endl;
 
-  // Bool to keep track of the position (index) in our parallel
-  // bool vector
-  int out_bool_count = 0;
-  // Using two parallel vectors:
-  //    1) adjList
-  //    2) boolList, places bool values for our adjacencies
-  for (auto iter = adjList[u].begin(); iter != adjList[u].end(); iter++)
-  {
-    // Ass soon as we reach a value to traverse from, we set it equal to true
-    std::advance(iter, out_bool_count);
-    if (*iter == 0)
-    {
-      // Set our new vector to the iterator
-      // We will set the path to true, and continue the traverse
-      // TODO fix the index for list (cant use int index b/c that would be nice)
-      *iter++;
-      auto bool_iter = boolList[*iter].begin();
-      std::advance(bool_iter, u)
-      u = *iter;  
-    }
-    // Incriment the count to keep track of bools
-    out_bool_count++;
-  }
-  return current_cycle;
+	// Starting the cycle with the first element of the first list
+
+	return current_cycle;
 }
 
 bool UnweightedGraph::VerifyEulerCycle(const list<int>& cycle) const {
-  //TODO
-  return false;
+	//TODO
+	return false;
 }
