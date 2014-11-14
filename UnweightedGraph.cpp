@@ -125,6 +125,10 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
   // These will also be used to set the bool values of the matrix
   int pathStart = 0, pathEnd = 0, initial = -1, cycle_start = 0, compare_end = -1;
 
+  // We will use this to count how many nodes point to null pointers
+  // so that we can determine whether or not to terminate the cycle
+  int count_null = 0;
+
   // Pointer to the start of the current cycle
   // This tells us whether or not we have completed a cycle
   // Set to greater than the size of the list initially so that we may begin the while loop
@@ -163,65 +167,104 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
   {
     node_iters.push_back(itr->begin());
   }
-
-  /*
+  cout << "POINTER VALS ORIG---" << endl;
   // * This prints the current pointer values DEBUG
   for (auto elem : node_iters)
-  cout << *elem << ",";
+    cout << *elem << ",";
   cout << endl;
-  */
 
   // Start the cycle process
   // append first elem of adjList to current cycle
   auto currItr = node_iters[0];
   subcycle.push_back(pathStart);
-  cout << "start = " << pathStart << " | currItr = " << *currItr << endl;
 
   while (! paths_exhausted)
   {
-
     // A single subcycle
     while (cycle_start != compare_end)
     {
-      cout << "enter while" << endl;
       if (! bool_matrix[pathStart][*node_iters[pathStart]])
       {
         // Add the path to the current list, 
         // set paths to true (indicates they have been traversed)
-        cout << "The path is fresh" << endl;
-        cout << "pS, pE" << endl;
         pathEnd = *node_iters[pathStart];
-        cout << pathStart << ", " << pathEnd << ", ";
-        //cout  << *(node_iters[pathStart]) << ", " << subcycle << endl;
         subcycle.push_back(pathEnd);
         bool_matrix[pathStart][pathEnd] = 1;
         bool_matrix[pathEnd][pathStart] = 1;
 
         auto holdStart = *node_iters[pathStart]; 
-        std::advance(node_iters[pathStart], 1);
+        //std::advance(node_iters[pathStart], 1);
+        cout << " b e f o r e  &  a f t e r " << endl;
+        cout << pathStart << ' ' << *node_iters[pathStart] << endl;
+        if (node_iters[pathStart] != adjList[pathStart].end())
+          node_iters[pathStart]++;
+        cout << pathStart << ' ' << *node_iters[pathStart] << endl;
         pathStart = holdStart;
         //pathStart = *node_iters[temp_Start];
         pathEnd = *node_iters[pathStart];
-        cout << endl << "NEW START AND END PATHS: " << pathStart << ' ' << pathEnd << endl;
         compare_end = pathStart;
+
+        cout << "POINTER VALS IF" << endl;
+        // * This prints the current pointer values DEBUG
+        for (auto elem : node_iters)
+          cout << *elem << ",";
+        cout << endl;
       }
       else
       {
         // Increment pointer to next possible node for next iteration through adjList
-        std::advance(node_iters[pathStart], 1);
-      }
+        //std::advance(node_iters[pathStart], 1);
+        cout << "node iter" << ' ';
+        cout << *node_iters[pathStart] << endl;
+        if(node_iters[pathStart] != adjList[pathStart].end())
+        {
+          cout << "NOT THE END WOOO" << endl;
+          node_iters[pathStart]++;
+          cout << pathStart << ' ' << *node_iters[pathStart] << endl;
+        }
+        cout << *node_iters[pathStart] << endl;
 
-      /*
-      // look for different path from currItr
-      // Advance iterator to look for next path on next pass
-      cout << endl << "NEXT IN PATH " << pathStart << endl;
-      pathStart = *node_iters[pathStart];
-      std::advance(node_iters[pathStart], 1);
-      currItr = node_iters[pathStart];
-      pathEnd = *node_iters[pathStart];
-      cout << "pathStart = " << pathStart << "| currItr = " << *currItr << " | pathEnd = " << pathEnd << endl;
-      */
+        cout << "POINTER VALS ELSE" << endl;
+        // * This prints the current pointer values DEBUG
+        for (auto elem : node_iters)
+          cout << *elem << ",";
+        cout << endl;
+      }
+      cout << endl << "SUBCYCLE" << endl;
+      for (auto elem : subcycle)
+        cout << elem << ' ';
+      cout << endl;
+
     }
+    // Count the number of nullptr paths, if they
+    // are equal to the size of the vector of node iterators,
+    // the paths are all exhausted --> exit the Algorithm
+    for (auto elem : node_iters)
+    {
+      if (*elem/1 != *elem)
+      {
+        cout << *elem << ", " << *elem << ", " << count_null;
+        count_null++;
+        cout << endl;
+      }
+    }
+
+    if (count_null == node_iters.size())
+      paths_exhausted = true;
+    else
+      count_null = 0;
+
+
+    // Continue on next loop
+    for (int elem = 0; elem != current_cycle.size(); elem++)
+    {
+      if (node_iters[elem] != adjList[elem].end()) 
+      {
+        pathStart = elem;
+        pathEnd = *node_iters[elem];
+        break;
+      }
+    } 
 
     // Splicing sublist into current_list
     auto currCycItr = current_cycle.begin();
@@ -237,20 +280,21 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
       cout << elem << ' ';
     cout << endl;
 
-    cout << endl << endl << "MATRIX: " << endl;
-    for (auto elem : bool_matrix)
-    {
-      for (auto item : elem)
-        cout << item << " " ;
-      cout << endl;
+    /*
+       cout << endl << endl << "MATRIX: " << endl;
+       for (auto elem : bool_matrix)
+       {
+       for (auto item : elem)
+       cout << item << " " ;
+       cout << endl;
+       */
 
-    } 
 
   }
   return current_cycle;
-}
+  }
 
-bool UnweightedGraph::VerifyEulerCycle(const list<int>& cycle) const {
-  //TODO
-  return false;
-}
+  bool UnweightedGraph::VerifyEulerCycle(const list<int>& cycle) const {
+    //TODO
+    return false;
+  }

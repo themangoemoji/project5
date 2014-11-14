@@ -29,8 +29,6 @@ class UnweightedGraph
   private:
     std::vector<std::list<int> > adjList;
     std::list<int> *adj = new std::list<int>[adjList.size()];
-    std::vector<std::vector<bool> > bool_matrix;
-    std::vector<bool> bool_vec; 
     //Add any attribute or method that can help complete your implementation
 
 };
