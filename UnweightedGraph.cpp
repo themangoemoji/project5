@@ -292,5 +292,13 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
 
 bool UnweightedGraph::VerifyEulerCycle(const list<int>& cycle) const {
   //TODO
-  return false;
+  int the_size = 0;
+  for (int i = 0; i != adjList.size(); i++)
+  { 
+    for(auto j = 0; j != adjList[i].size(); j++)
+      the_size++;
+  }
+  if ((the_size/2) != (cycle.size() - 1))
+    return false;
+  return true;
 }
