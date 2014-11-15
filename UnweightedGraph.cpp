@@ -181,10 +181,6 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
     // A single subcycle
     while (cycle_start != compare_end)
     {
-      cout << "----------------" << endl;
-      cout << " enter WHILE " << endl;
-      cout << cycle_start << ' ' << compare_end << endl;
-      cout << "----------------" << endl;
       if (! bool_matrix[pathStart][*node_iters[pathStart]])
       {
         // Add the path to the current list, 
@@ -199,40 +195,26 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
         //std::advance(node_iters[pathStart], 1);
         if (node_iters[pathStart] != adjList[pathStart].end())
           node_iters[pathStart]++;
-        cout << pathStart << ' ' << *node_iters[pathStart] << endl;
         pathStart = holdStart;
         //pathStart = *node_iters[temp_Start];
         pathEnd = *node_iters[pathStart];
         compare_end = pathStart;
 
-        cout << "poop compare start/compared end: " << compare_end << '/' << cycle_start << endl;
         if (compare_end == cycle_start) 
         {
-          cout << "YUUUUUS: ";
-          cout <<  pathEnd << endl;
-          cout << compare_end << ' ' << cycle_start << endl;
           subcycle.push_back(pathStart);     
-          cout << " CURR " << endl;
-          for (auto elem : subcycle)
-            cout << elem << " ";
-          cout << endl;
-          cout << "----------------" << endl;
         }
-        cout << "----------------" << endl;
 
       }
       // There was not a valid path from the start node
       else
       {
-        cout << "CHANGE OF PATH: " ;
         // Increment pointer to next possible start node for next iteration through adjList
         // Do this only if the next pathEnd would not point to the end of the list
         if(node_iters[pathStart] != adjList[pathStart].end())
         {
           node_iters[pathStart]++;
           pathEnd = *node_iters[pathStart];
-          cout << " there is still a path available: ";
-          cout << pathStart << ' ' << *node_iters[pathStart] << endl;
 
         }
         // If the path points to the end of the list,
@@ -240,117 +222,70 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
         // we find a successful path
         else
         {
-          cout << "ENTER WHILE TO change HEAD NODES now *********" << endl;
-          cout << endl << " CURRENT CYCLE" << endl;
-          for (auto elem : current_cycle)
-            cout << elem << ' ';
-          cout << endl;
           new_head_found = false;
           while ( ! new_head_found)
           {
             current_cycle_itr++;
-            cout << "going through while with " << *current_cycle_itr;
+            if (current_cycle_itr == current_cycle.end())
+            {
+              cout << "FIN BETCH" << endl;
+              paths_exhausted = true;
+              cycle_start = compare_end;
+              break;
+            }
             pathStart = *current_cycle_itr;
             if(node_iters[pathStart] != adjList[pathStart].end())
             {
-              cout << "; we found a path from " << pathStart << " to " << *node_iters[pathStart];
               pathEnd = *node_iters[pathStart];
               new_head_found = true;
             }
             else 
             {
-              cout << " is at null if you see suspicious eyes: o." << (node_iters[pathStart] != adjList[pathStart].end());
-              cout << "; No new node found at " << pathStart << " to " << pathEnd ;
             }
             compare_end = 999999;
             cycle_start = pathStart; 
-            cout << endl << "********* ***************** *********" << endl;
+            // Done, bitchz
           }
         }
       }
     }
 
-    cout << "END OF SUBCYCLE" << endl;
-    compare_end = 99999;
-    // Splicing sublist into current_list
-    
-    // Hold the size of the subcycle to adjust iterator after we splice
-    // Because the iterator will have been moved right
-    int diff_size = subcycle.size();
+    if (paths_exhausted == 0) {
+      compare_end = 99999;
+      // Splicing sublist into current_list
 
-    // We instantiate and decrement the subcycle iterator, 
-    // We do not want the last element
-    subcycle_itr = subcycle.end();
-    subcycle_itr--;
+      // Hold the size of the subcycle to adjust iterator after we splice
+      // Because the iterator will have been moved right
+      int diff_size = subcycle.size();
 
-    cout << "*SPLICING: ";
-    if (current_cycle.size() != 0)
-    {
-      cout << "We are going to splice, our current cycle is -->";
-      for (auto elem : current_cycle)
-        cout << elem << ' ';
-      cout << "our sub cycle is -->";
-      for (auto elem : subcycle)
-        cout << elem << ' ';
-      current_cycle.splice(current_cycle_itr, subcycle, subcycle.begin(), (subcycle_itr));
-      cout << "; post slice, our current cycle is -->";
-      for (auto elem : current_cycle)
-        cout << elem << ' ';
-      cout << "; Our sub cycle is -->";
-      for (auto elem : subcycle)
-        cout << elem << ' ';
-      /*
-      for (auto i = 0; i != diff_size; i++)
-        current_cycle_itr--;
-      cout << "; And our current_cycle_itr is " << *current_cycle_itr;
-      */
-    }
-    else
-      current_cycle.splice(current_cycle_itr, subcycle);
-    cout << endl << "********* ***************** *********" << endl;
-    subcycle.clear();
+      // We instantiate and decrement the subcycle iterator, 
+      // We do not want the last element
+      subcycle_itr = subcycle.end();
+      subcycle_itr--;
 
-    // Continue on next loop
-    for (auto elem : current_cycle)
-    {
-      cout << "----------------" << endl;
-      cout << "look for new PATH" << endl;
-      // If we find a viable path, set up next subcycle
-      if (node_iters[elem] != adjList[elem].end()) 
+      if (current_cycle.size() != 0)
       {
-        cout << "FOUND a new path from " << elem << " and *node_iters[elem] = " << *node_iters[elem] << endl;
-        pathStart = elem;
-        pathEnd = *node_iters[elem];
-        compare_end = 99999;
-        cycle_start = pathStart;
-        //subcycle.push_back(pathStart);
-        break;
+        current_cycle.splice(current_cycle_itr, subcycle, subcycle.begin(), (subcycle_itr));
       }
-    } 
-    cout << "----------------" << endl;
-    cout << "NEW CYCLE START with  cycle_start/compare_end:  " << cycle_start << '/' << compare_end << " and pS pE: "<< pathStart << " " << pathEnd << endl;
+      else
+        current_cycle.splice(current_cycle_itr, subcycle);
+      subcycle.clear();
 
-    cout << "----------------" << endl;
-
-
-    // Count the number of nullptr paths, if they
-    // are equal to the size of the vector of node iterators,
-    // the paths are all exhausted --> exit the Algorithm
-    count_null = 0;
-    for (auto i = 0; i != node_iters.size(); i++)
-    {
-      if (node_iters[i] == adjList[i].end())
+      // Continue on next loop
+      for (auto elem : current_cycle)
       {
-        count_null++;
-      }
+        // If we find a viable path, set up next subcycle
+        if (node_iters[elem] != adjList[elem].end()) 
+        {
+          pathStart = elem;
+          pathEnd = *node_iters[elem];
+          compare_end = 99999;
+          cycle_start = pathStart;
+          //subcycle.push_back(pathStart);
+          break;
+        }
+      } 
     }
-
-    // If we should break out of the whole thing
-    if (count_null == node_iters.size())
-      paths_exhausted = true;
-    else
-      count_null = 0;
-
   }
   return current_cycle;
 }
