@@ -119,6 +119,7 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
   list<int> current_cycle;  
   list<int> subcycle;  
   list<int>::iterator current_cycle_itr;
+  list<int>::iterator subcycle_itr;
   // Used to terminate full cycle
   bool paths_exhausted = false;
 
@@ -240,20 +241,30 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
         else
         {
           cout << "ENTER WHILE TO change HEAD NODES now *********" << endl;
+          cout << endl << " CURRENT CYCLE" << endl;
+          for (auto elem : current_cycle)
+            cout << elem << ' ';
+          cout << endl;
           new_head_found = false;
           while ( ! new_head_found)
           {
             current_cycle_itr++;
+            cout << "going through while with " << *current_cycle_itr;
             pathStart = *current_cycle_itr;
             if(node_iters[pathStart] != adjList[pathStart].end())
             {
+              cout << "; we found a path from " << pathStart << " to " << *node_iters[pathStart];
               pathEnd = *node_iters[pathStart];
               new_head_found = true;
             }
-            cout << pathStart << ' ' << pathEnd << endl;
+            else 
+            {
+              cout << " is at null if you see suspicious eyes: o." << (node_iters[pathStart] != adjList[pathStart].end());
+              cout << "; No new node found at " << pathStart << " to " << pathEnd ;
+            }
             compare_end = 999999;
             cycle_start = pathStart; 
-            cout << "********* ***************** *********" << endl;
+            cout << endl << "********* ***************** *********" << endl;
           }
         }
       }
@@ -262,7 +273,42 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
     cout << "END OF SUBCYCLE" << endl;
     compare_end = 99999;
     // Splicing sublist into current_list
-    current_cycle.splice(current_cycle_itr, subcycle);
+    
+    // Hold the size of the subcycle to adjust iterator after we splice
+    // Because the iterator will have been moved right
+    int diff_size = subcycle.size();
+
+    // We instantiate and decrement the subcycle iterator, 
+    // We do not want the last element
+    subcycle_itr = subcycle.end();
+    subcycle_itr--;
+
+    cout << "*SPLICING: ";
+    if (current_cycle.size() != 0)
+    {
+      cout << "We are going to splice, our current cycle is -->";
+      for (auto elem : current_cycle)
+        cout << elem << ' ';
+      cout << "our sub cycle is -->";
+      for (auto elem : subcycle)
+        cout << elem << ' ';
+      current_cycle.splice(current_cycle_itr, subcycle, subcycle.begin(), (subcycle_itr));
+      cout << "; post slice, our current cycle is -->";
+      for (auto elem : current_cycle)
+        cout << elem << ' ';
+      cout << "; Our sub cycle is -->";
+      for (auto elem : subcycle)
+        cout << elem << ' ';
+      /*
+      for (auto i = 0; i != diff_size; i++)
+        current_cycle_itr--;
+      cout << "; And our current_cycle_itr is " << *current_cycle_itr;
+      */
+    }
+    else
+      current_cycle.splice(current_cycle_itr, subcycle);
+    cout << endl << "********* ***************** *********" << endl;
+    subcycle.clear();
 
     // Continue on next loop
     for (auto elem : current_cycle)
@@ -304,19 +350,6 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
       paths_exhausted = true;
     else
       count_null = 0;
-
-
-
-    /*
-       cout << endl << " CURRENT CYCLE" << endl;
-       for (auto elem : current_cycle)
-       cout << elem << ' ';
-       cout << endl;
-       cout << endl << "SUBCYCLE" << endl;
-       for (auto elem : subcycle)
-       cout << elem << ' ';
-       cout << endl;
-*/
 
   }
   return current_cycle;
