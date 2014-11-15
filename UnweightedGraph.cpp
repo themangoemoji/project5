@@ -1,7 +1,10 @@
 /**
  * UnweightedGraph Class
  * Stub written by Sorrachai Yingchareonthawornchai, 29 OCT 2014
- * Completed by [Your Name]
+ * Completed by Michael H. Wright
+ * 
+ * Did white board logic and TA office hours with Ian Ferguson. We had some of the same notes
+ * given to us by the TA for our FindEulerCycle function.
  */
 #include "UnweightedGraph.h"
 
@@ -125,11 +128,10 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
 
   // These are the indecies of the start and end of a path
   // These will also be used to set the bool values of the matrix
-  int pathStart = 0, pathEnd = 0, initial = -1, cycle_start = 0, compare_end = 9999;
+  int pathStart = 0, pathEnd = 0, cycle_start = 0, compare_end = 9999;
 
   // We will use this to count how many nodes point to null pointers
   // so that we can determine whether or not to terminate the cycle
-  int count_null = 0;
 
   // Pointer to the start of the current cycle
   // This tells us whether or not we have completed a cycle
@@ -172,7 +174,6 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
 
   // Start the cycle process
   // append first elem of adjList to current cycle
-  auto currItr = node_iters[0];
   //  subcycle.push_back(pathStart);
   current_cycle_itr = current_cycle.begin();
 
@@ -228,7 +229,7 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
             current_cycle_itr++;
             if (current_cycle_itr == current_cycle.end())
             {
-              cout << "FIN BETCH" << endl;
+              //cout << "FIN BETCH" << endl;
               paths_exhausted = true;
               cycle_start = compare_end;
               break;
@@ -253,10 +254,6 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
     if (paths_exhausted == 0) {
       compare_end = 99999;
       // Splicing sublist into current_list
-
-      // Hold the size of the subcycle to adjust iterator after we splice
-      // Because the iterator will have been moved right
-      int diff_size = subcycle.size();
 
       // We instantiate and decrement the subcycle iterator, 
       // We do not want the last element
@@ -291,8 +288,12 @@ list<int> UnweightedGraph::FindEulerianCycle() const {
 }
 
 bool UnweightedGraph::VerifyEulerCycle(const list<int>& cycle) const {
-  //TODO
+  // Make another bool matrix
+  // Data structures for constructing bool matrix
+  std::vector<std::vector<bool> > bool_matrix;
+  std::vector<bool> bool_vec; 
   int the_size = 0;
+
   for (int i = 0; i != adjList.size(); i++)
   { 
     for(auto j = 0; j != adjList[i].size(); j++)
@@ -300,5 +301,36 @@ bool UnweightedGraph::VerifyEulerCycle(const list<int>& cycle) const {
   }
   if ((the_size/2) != (cycle.size() - 1))
     return false;
-  return true;
+
+  // Iterate through length of list, insert "false" into vector of bools
+  // that signal whether or not path is visited
+  for (auto itr = 0; itr != adjList.size(); itr++)
+  {
+    bool_vec.push_back(0);
+  }
+  // Iterate through length and insert "false" lists into matrix
+  for (auto itr = 0; itr != adjList.size(); itr++)
+  {
+    bool_matrix.push_back(bool_vec);
+  }
+
+  auto next = cycle.begin();
+  for (auto elem = cycle.begin(); elem != cycle.end(); elem++)
+  {
+    next = elem;
+    ++next;
+    if (elem != cycle.end())
+      if (! bool_matrix[*elem][*next])
+      {
+        if (next == cycle.end())
+          return true;
+        bool_matrix[*elem][*next] = 1;
+        bool_matrix[*next][*elem] = 1;
+      }
+      else
+      {
+      return false;
+      }
+  }
+return true;
 }
